@@ -45,6 +45,7 @@ func main() {
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGINT)
+
 	var wg sync.WaitGroup
 	wg.Go(func() {
 		s := <-sigChan
