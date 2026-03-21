@@ -57,3 +57,28 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h *Handler) GetDevices(w http.ResponseWriter, r *http.Request) {
+	logger := h.logger.With(zap.String("endpoint", "GetDevices"))
+	var d dto.GetDevicesRequest
+	if s := r.URL.Query().Get("search"); s != "" {
+		d.Search = &s
+	}
+	if a := r.URL.Query().Get("is_active"); a != "" {
+		d.IsActive = &a
+	}
+	devices, err := h.repo.GetDevices(r.Context(), d)
+	if err != nil {
+		logger.Error("failed to get devices list", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(devices)
+	if err != nil {
+		logger.Error("faield to encode devices", zap.Error(err))
+		return
+	}
+}

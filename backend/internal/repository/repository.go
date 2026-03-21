@@ -48,9 +48,9 @@ func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest)
 	args, argsIdx := []any{}, 1
 	var clauses []string
 
-	if data.Hostname != nil {
+	if data.Search != nil {
 		clauses = append(clauses, fmt.Sprintf("hostname ILIKE $%d", argsIdx))
-		args = append(args, "%"+*data.Hostname+"%")
+		args = append(args, "%"+*data.Search+"%")
 		argsIdx++
 	}
 

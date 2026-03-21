@@ -7,12 +7,12 @@ type UpdateDeviceRequest struct {
 }
 
 type GetDevicesRequest struct {
-	IsActive *bool   `json:"is_active"`
-	Hostname *string `json:"hostname"`
+	IsActive *string
+	Search   *string
 }
 
 type CreateDeviceRequest struct {
-	IP       *string `json:"ip"`
-	Hostname *string `json:"hostname"`
-	IsActive *bool   `json:"is_active"`
+	IP       string `json:"ip"`
+	Hostname string `json:"hostname"`
+	IsActive bool   `json:"is_active"`
 }
