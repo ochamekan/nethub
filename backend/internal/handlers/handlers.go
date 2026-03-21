@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/ochamekan/nethub/backend/internal/dto"
@@ -79,6 +81,33 @@ func (h *Handler) GetDevices(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(devices)
 	if err != nil {
 		logger.Error("faield to encode devices", zap.Error(err))
+		return
+	}
+}
+
+func (h *Handler) GetDevice(w http.ResponseWriter, r *http.Request) {
+	logger := h.logger.With(zap.String("endpoint", "GetDevice"))
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		logger.Warn("failed to extract id from searchParams", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	d, err := h.repo.GetDevice(r.Context(), int64(id))
+	if err != nil {
+		logger.Error("failed to get device", zap.Error(err))
+		if errors.Is(repository.ErrNotFound, err) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(d)
+	if err != nil {
+		logger.Error("faield to encode device", zap.Error(err))
 		return
 	}
 }

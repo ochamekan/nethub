@@ -41,7 +41,7 @@ func main() {
 
 	mux.HandleFunc("POST /devices", handler.CreateDevice)
 	mux.HandleFunc("GET /devices", handler.GetDevices)
-	mux.HandleFunc("GET /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
+	mux.HandleFunc("GET /devices/{id}", handler.GetDevice)
 	mux.HandleFunc("POST /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
 	mux.HandleFunc("DELETE /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
 
