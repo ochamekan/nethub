@@ -38,6 +38,12 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.TrimSpace(b.Location) == "" {
+		logger.Warn("location field is required")
+		http.Error(w, "location field is required", http.StatusBadRequest)
+		return
+	}
+
 	if strings.TrimSpace(b.Hostname) == "" {
 		logger.Warn("hostname is required")
 		http.Error(w, "hostname is required", http.StatusBadRequest)
@@ -45,7 +51,7 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger.Info("creating device")
-	d, err := h.repo.CreateDevice(r.Context(), b.IP, b.Hostname, b.IsActive)
+	d, err := h.repo.CreateDevice(r.Context(), b.IP, b.Hostname, b.Location, b.IsActive)
 	if err != nil {
 		logger.Error("failed to create new device", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)

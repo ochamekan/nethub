@@ -13,7 +13,7 @@ import (
 )
 
 type DeviceRepository interface {
-	CreateDevice(ctx context.Context, ip, hostname string, is_active bool) (models.Device, error)
+	CreateDevice(ctx context.Context, ip, hostname, location string, is_active bool) (models.Device, error)
 	GetDevices(ctx context.Context, data dto.GetDevicesRequest) ([]models.Device, error)
 	GetDevice(ctx context.Context, id int64) (models.Device, error)
 	UpdateDevice(ctx context.Context, id int64, data dto.UpdateDeviceRequest) (models.Device, error)
@@ -30,8 +30,8 @@ func New(db *pgxpool.Pool) DeviceRepository {
 
 var ErrNotFound = errors.New("not found")
 
-func (r *Repository) CreateDevice(ctx context.Context, ip, hostname string, is_active bool) (models.Device, error) {
-	rows, err := r.db.Query(ctx, "INSERT INTO devices (ip, hostname, is_active) VALUES ($1, $2, $3) RETURNING *", ip, hostname, is_active)
+func (r *Repository) CreateDevice(ctx context.Context, ip, hostname, location string, is_active bool) (models.Device, error) {
+	rows, err := r.db.Query(ctx, "INSERT INTO devices (ip, hostname, location, is_active) VALUES ($1, $2, $3, $4) RETURNING *", ip, hostname, location, is_active)
 	if err != nil {
 		return models.Device{}, err
 	}
@@ -102,6 +102,12 @@ func (r *Repository) UpdateDevice(ctx context.Context, id int64, data dto.Update
 	if data.Hostname != nil {
 		clauses = append(clauses, fmt.Sprintf("hostname = $%d", argIdx))
 		args = append(args, *data.Hostname)
+		argIdx++
+	}
+
+	if data.Location != nil {
+		clauses = append(clauses, fmt.Sprintf("location = $%d", argIdx))
+		args = append(args, *data.Location)
 		argIdx++
 	}
 
