@@ -39,11 +39,11 @@ func main() {
 	mux := http.NewServeMux()
 	srv := &http.Server{Addr: ":8000", Handler: mux}
 
-	mux.HandleFunc("POST /devices", handler.CreateDevice)
-	mux.HandleFunc("GET /devices", handler.GetDevices)
-	mux.HandleFunc("GET /devices/{id}", handler.GetDevice)
-	mux.HandleFunc("PUT /devices/{id}", handler.UpdateDevice)
-	mux.HandleFunc("DELETE /devices/{id}", handler.DeleteDevice)
+	mux.HandleFunc("POST /v1/devices", handler.CreateDevice)
+	mux.HandleFunc("GET /v1/devices", handler.GetDevices)
+	mux.HandleFunc("GET /v1/devices/{id}", handler.GetDevice)
+	mux.HandleFunc("PUT /v1/devices/{id}", handler.UpdateDevice)
+	mux.HandleFunc("DELETE /v1/devices/{id}", handler.DeleteDevice)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGINT)

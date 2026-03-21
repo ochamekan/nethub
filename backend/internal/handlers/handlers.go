@@ -44,6 +44,7 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info("creating device")
 	d, err := h.repo.CreateDevice(r.Context(), b.IP, b.Hostname, b.IsActive)
 	if err != nil {
 		logger.Error("failed to create new device", zap.Error(err))
@@ -58,6 +59,7 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 		logger.Error("failed to encode json", zap.Error(err))
 		return
 	}
+	logger.Info("device successfully created")
 }
 
 func (h *Handler) GetDevices(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +71,8 @@ func (h *Handler) GetDevices(w http.ResponseWriter, r *http.Request) {
 	if a := r.URL.Query().Get("is_active"); a != "" {
 		d.IsActive = &a
 	}
+
+	logger.Info("getting device list")
 	devices, err := h.repo.GetDevices(r.Context(), d)
 	if err != nil {
 		logger.Error("failed to get devices list", zap.Error(err))
@@ -83,6 +87,7 @@ func (h *Handler) GetDevices(w http.ResponseWriter, r *http.Request) {
 		logger.Error("faield to encode devices", zap.Error(err))
 		return
 	}
+	logger.Info("device list successfully retrieved")
 }
 
 func (h *Handler) GetDevice(w http.ResponseWriter, r *http.Request) {
@@ -93,6 +98,7 @@ func (h *Handler) GetDevice(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	logger.Info("getting device by id")
 	d, err := h.repo.GetDevice(r.Context(), int64(id))
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
@@ -112,6 +118,8 @@ func (h *Handler) GetDevice(w http.ResponseWriter, r *http.Request) {
 		logger.Error("faield to encode device", zap.Error(err))
 		return
 	}
+	logger.Info("device successfully retrieved")
+
 }
 
 func (h *Handler) UpdateDevice(w http.ResponseWriter, r *http.Request) {
@@ -131,6 +139,7 @@ func (h *Handler) UpdateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info("updating device by id")
 	d, err := h.repo.UpdateDevice(r.Context(), int64(id), b)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
@@ -150,6 +159,7 @@ func (h *Handler) UpdateDevice(w http.ResponseWriter, r *http.Request) {
 		logger.Error("faield to encode device", zap.Error(err))
 		return
 	}
+	logger.Info("device successfully updated")
 }
 
 func (h *Handler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
@@ -160,6 +170,8 @@ func (h *Handler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	logger.Info("deleting device by id")
 	d, err := h.repo.DeleteDevice(r.Context(), int64(id))
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
@@ -179,4 +191,5 @@ func (h *Handler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
 		logger.Error("faield to encode device", zap.Error(err))
 		return
 	}
+	logger.Info("device successfully deleted")
 }
