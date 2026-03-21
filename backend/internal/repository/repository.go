@@ -85,7 +85,7 @@ func (r *Repository) GetDevice(ctx context.Context, id int64) (models.Device, er
 
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Device{}, ErrNotFound
 		}
 		return models.Device{}, err
@@ -125,7 +125,7 @@ func (r *Repository) UpdateDevice(ctx context.Context, id int64, data dto.Update
 	q := fmt.Sprintf("UPDATE devices SET %s WHERE id = $%d RETURNING *", strings.Join(clauses, ", "), argIdx)
 	rows, err := r.db.Query(ctx, q, args...)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Device{}, ErrNotFound
 		}
 		return models.Device{}, err
@@ -147,7 +147,7 @@ func (r *Repository) DeleteDevice(ctx context.Context, id int64) (models.Device,
 	defer rows.Close()
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Device{}, ErrNotFound
 		}
 		return models.Device{}, err

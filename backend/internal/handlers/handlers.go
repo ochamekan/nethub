@@ -26,7 +26,7 @@ func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	var b dto.CreateDeviceRequest
 	err := json.NewDecoder(r.Body).Decode(&b)
 	if err != nil {
-		logger.Error("failed to decode request body", zap.Error(err))
+		logger.Warn("failed to decode request body", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -91,15 +91,84 @@ func (h *Handler) GetDevice(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Warn("failed to extract id from searchParams", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	d, err := h.repo.GetDevice(r.Context(), int64(id))
 	if err != nil {
-		logger.Error("failed to get device", zap.Error(err))
-		if errors.Is(repository.ErrNotFound, err) {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, repository.ErrNotFound) {
+			logger.Warn("device not found")
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
+		logger.Error("failed to get device", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(d)
+	if err != nil {
+		logger.Error("faield to encode device", zap.Error(err))
+		return
+	}
+}
+
+func (h *Handler) UpdateDevice(w http.ResponseWriter, r *http.Request) {
+	logger := h.logger.With(zap.String("endpoint", "UpdateDevice"))
+	var b dto.UpdateDeviceRequest
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		logger.Warn("failed to extract id from search params", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		logger.Warn("failed to decode request body", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	d, err := h.repo.UpdateDevice(r.Context(), int64(id), b)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			logger.Warn("device not found")
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		logger.Error("failed to update device", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(d)
+	if err != nil {
+		logger.Error("faield to encode device", zap.Error(err))
+		return
+	}
+}
+
+func (h *Handler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
+	logger := h.logger.With(zap.String("endpoint", "DeleteDevice"))
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		logger.Warn("failed to extract id from searchParams", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	d, err := h.repo.DeleteDevice(r.Context(), int64(id))
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			logger.Warn("device not found")
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		logger.Error("failed to delete device", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

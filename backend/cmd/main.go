@@ -42,8 +42,8 @@ func main() {
 	mux.HandleFunc("POST /devices", handler.CreateDevice)
 	mux.HandleFunc("GET /devices", handler.GetDevices)
 	mux.HandleFunc("GET /devices/{id}", handler.GetDevice)
-	mux.HandleFunc("POST /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
-	mux.HandleFunc("DELETE /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
+	mux.HandleFunc("PUT /devices/{id}", handler.UpdateDevice)
+	mux.HandleFunc("DELETE /devices/{id}", handler.DeleteDevice)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGINT)
