@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -11,20 +12,30 @@ import (
 	"github.com/ochamekan/nethub/backend/pkg/models"
 )
 
+type DeviceRepository interface {
+	CreateDevice(ctx context.Context, ip, hostname string) (models.Device, error)
+	GetDevices(ctx context.Context, data dto.GetDevicesRequest) ([]models.Device, error)
+	GetDevice(ctx context.Context, id int64) (models.Device, error)
+	UpdateDevice(ctx context.Context, id int64, data dto.UpdateDeviceRequest) (models.Device, error)
+	DeleteDevice(ctx context.Context, id int64) (models.Device, error)
+}
+
 type Repository struct {
 	db *pgxpool.Pool
 }
 
-func New(db *pgxpool.Pool) Repository {
-	return Repository{db}
+func New(db *pgxpool.Pool) DeviceRepository {
+	return &Repository{db}
 }
+
+var ErrNotFound = errors.New("not found")
 
 func (r *Repository) CreateDevice(ctx context.Context, ip, hostname string) (models.Device, error) {
 	rows, err := r.db.Query(ctx, "INSERT INTO devices (ip, hostname) VALUES ($1, $2) RETURNING *", ip, hostname)
 	if err != nil {
 		return models.Device{}, err
 	}
-	rows.Close()
+	defer rows.Close()
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
 		return models.Device{}, err
@@ -32,8 +43,28 @@ func (r *Repository) CreateDevice(ctx context.Context, ip, hostname string) (mod
 	return d, nil
 }
 
-func (r *Repository) GetDevices(ctx context.Context) ([]models.Device, error) {
-	rows, err := r.db.Query(ctx, "SELECT * FROM devices")
+func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest) ([]models.Device, error) {
+	q := "SELECT * FROM devices"
+	args, argsIdx := []any{}, 1
+	var clauses []string
+
+	if data.Hostname != nil {
+		clauses = append(clauses, fmt.Sprintf("hostname ILIKE $%d", argsIdx))
+		args = append(args, "%"+*data.Hostname+"%")
+		argsIdx++
+	}
+
+	if data.IsActive != nil {
+		clauses = append(clauses, fmt.Sprintf("is_active = $%d", argsIdx))
+		args = append(args, *data.IsActive)
+		argsIdx++
+	}
+
+	if len(clauses) > 0 {
+		q += " WHERE" + strings.Join(clauses, " AND ")
+	}
+
+	rows, err := r.db.Query(ctx, q, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +81,13 @@ func (r *Repository) GetDevice(ctx context.Context, id int64) (models.Device, er
 	if err != nil {
 		return models.Device{}, err
 	}
-	rows.Close()
+	defer rows.Close()
 
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.Device{}, ErrNotFound
+		}
 		return models.Device{}, err
 	}
 
@@ -91,9 +125,12 @@ func (r *Repository) UpdateDevice(ctx context.Context, id int64, data dto.Update
 	q := fmt.Sprintf("UPDATE devices SET %s WHERE id = $%d RETURNING *", strings.Join(clauses, ", "), argIdx)
 	rows, err := r.db.Query(ctx, q, args...)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.Device{}, ErrNotFound
+		}
 		return models.Device{}, err
 	}
-	rows.Close()
+	defer rows.Close()
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
 		return models.Device{}, err
@@ -107,9 +144,12 @@ func (r *Repository) DeleteDevice(ctx context.Context, id int64) (models.Device,
 	if err != nil {
 		return models.Device{}, err
 	}
-	rows.Close()
+	defer rows.Close()
 	d, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Device])
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.Device{}, ErrNotFound
+		}
 		return models.Device{}, err
 	}
 

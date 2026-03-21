@@ -5,3 +5,8 @@ type UpdateDeviceRequest struct {
 	IP       *string `json:"ip"`
 	IsActive *bool   `json:"is_active"`
 }
+
+type GetDevicesRequest struct {
+	IsActive *bool
+	Hostname *string // substring search
+}
