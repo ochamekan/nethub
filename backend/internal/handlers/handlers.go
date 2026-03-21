@@ -1,6 +1,59 @@
 package handlers
 
-type Hander struct {
+import (
+	"encoding/json"
+	"net/http"
+	"strings"
+
+	"github.com/ochamekan/nethub/backend/internal/dto"
+	"github.com/ochamekan/nethub/backend/internal/repository"
+	"go.uber.org/zap"
+)
+
+type Handler struct {
+	repo   repository.DeviceRepository
+	logger *zap.Logger
 }
 
-func New()
+func New(repo repository.DeviceRepository, logger *zap.Logger) *Handler {
+	return &Handler{repo: repo, logger: logger.With(zap.String("component", "handler"))}
+}
+
+func (h *Handler) CreateDevice(w http.ResponseWriter, r *http.Request) {
+	logger := h.logger.With(zap.String("endpoint", "CreateDevice"))
+	var b dto.CreateDeviceRequest
+	err := json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		logger.Error("failed to decode request body", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// NOTE: На проде я бы использовал validator, но для данного проекта это оверкил
+	if strings.TrimSpace(b.IP) == "" {
+		logger.Warn("ip field is required")
+		http.Error(w, "ip field is required", http.StatusBadRequest)
+		return
+	}
+
+	if strings.TrimSpace(b.Hostname) == "" {
+		logger.Warn("hostname is required")
+		http.Error(w, "hostname is required", http.StatusBadRequest)
+		return
+	}
+
+	d, err := h.repo.CreateDevice(r.Context(), b.IP, b.Hostname, b.IsActive)
+	if err != nil {
+		logger.Error("failed to create new device", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	err = json.NewEncoder(w).Encode(d)
+	if err != nil {
+		logger.Error("failed to encode json", zap.Error(err))
+		return
+	}
+}

@@ -10,17 +10,19 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/ochamekan/nethub/backend/internal/handlers"
+	"github.com/ochamekan/nethub/backend/internal/repository"
 	"go.uber.org/zap"
 )
 
 func main() {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
-	logger.Info("Starting network devices service...")
+	logger.Info("starting network devices service...")
 
 	err := godotenv.Load()
 	if err != nil {
-		logger.Fatal("Error loading .env file", zap.Error(err))
+		logger.Fatal("error loading .env file", zap.Error(err))
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -28,16 +30,16 @@ func main() {
 
 	dbpool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
-		logger.Fatal("Unable to create connection pool", zap.Error(err))
+		logger.Fatal("unable to create connection pool", zap.Error(err))
 	}
 	defer dbpool.Close()
 
-	// repo := repository.New(dbpool)
-	// handler := handlers.New(repo)
+	repo := repository.New(dbpool)
+	handler := handlers.New(repo, logger)
 	mux := http.NewServeMux()
 	srv := &http.Server{Addr: ":8000", Handler: mux}
 
-	mux.HandleFunc("POST /devices", func(w http.ResponseWriter, r *http.Request) {})
+	mux.HandleFunc("POST /devices", handler.CreateDevice)
 	mux.HandleFunc("GET /devices", func(w http.ResponseWriter, r *http.Request) {})
 	mux.HandleFunc("GET /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
 	mux.HandleFunc("POST /devices/{id}", func(w http.ResponseWriter, r *http.Request) {})
@@ -49,12 +51,12 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Go(func() {
 		s := <-sigChan
-		logger.Info("Received signal, attempting graceful shutdown", zap.Stringer("signal", s))
+		logger.Info("received signal, attempting graceful shutdown", zap.Stringer("signal", s))
 		cancel()
 		if err := srv.Shutdown(context.Background()); err != nil {
-			logger.Error("Shutdown error", zap.Error(err))
+			logger.Error("shutdown error", zap.Error(err))
 		}
-		logger.Info("Gracefully stopped network devices service")
+		logger.Info("gracefully stopped network devices service")
 	})
 
 	if err := srv.ListenAndServe(); err != nil {

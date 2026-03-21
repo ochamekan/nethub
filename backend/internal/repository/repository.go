@@ -13,7 +13,7 @@ import (
 )
 
 type DeviceRepository interface {
-	CreateDevice(ctx context.Context, ip, hostname string) (models.Device, error)
+	CreateDevice(ctx context.Context, ip, hostname string, is_active bool) (models.Device, error)
 	GetDevices(ctx context.Context, data dto.GetDevicesRequest) ([]models.Device, error)
 	GetDevice(ctx context.Context, id int64) (models.Device, error)
 	UpdateDevice(ctx context.Context, id int64, data dto.UpdateDeviceRequest) (models.Device, error)
@@ -30,8 +30,8 @@ func New(db *pgxpool.Pool) DeviceRepository {
 
 var ErrNotFound = errors.New("not found")
 
-func (r *Repository) CreateDevice(ctx context.Context, ip, hostname string) (models.Device, error) {
-	rows, err := r.db.Query(ctx, "INSERT INTO devices (ip, hostname) VALUES ($1, $2) RETURNING *", ip, hostname)
+func (r *Repository) CreateDevice(ctx context.Context, ip, hostname string, is_active bool) (models.Device, error) {
+	rows, err := r.db.Query(ctx, "INSERT INTO devices (ip, hostname, is_active) VALUES ($1, $2, $3) RETURNING *", ip, hostname, is_active)
 	if err != nil {
 		return models.Device{}, err
 	}
