@@ -63,7 +63,7 @@ func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest)
 	if len(clauses) > 0 {
 		q += " WHERE " + strings.Join(clauses, " AND ")
 	}
-	q += " ORDER BY hostname ASC"
+	q += " ORDER BY created_at ASC"
 
 	rows, err := r.db.Query(ctx, q, args...)
 	if err != nil {

@@ -1,22 +1,30 @@
 import CreateDeviceDialog from "./create-device-dialog";
 import { Switch } from "@/components/ui/switch";
+import { useSearchParams } from "react-router-dom";
 
-interface DevicesToolbarProps {
-  onlyActive: boolean;
-  onOnlyActiveChange: (value: boolean) => void;
-}
+export default function DevicesToolbar() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onlyActive = searchParams.get("is_active") === "true";
 
-export default function DevicesToolbar({
-  onlyActive,
-  onOnlyActiveChange,
-}: DevicesToolbarProps) {
+  const handleToggle = (value: boolean) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) {
+        next.set("is_active", "true");
+      } else {
+        next.delete("is_active");
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div
         className="flex items-center gap-2 cursor-pointer select-none"
-        onClick={() => onOnlyActiveChange(!onlyActive)}
+        onClick={() => handleToggle(!onlyActive)}
       >
-        <Switch checked={onlyActive} onCheckedChange={onOnlyActiveChange} />
+        <Switch checked={onlyActive} onCheckedChange={handleToggle} />
         <span className="text-sm text-muted-foreground">Только активные</span>
       </div>
       <CreateDeviceDialog />

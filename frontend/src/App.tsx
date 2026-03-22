@@ -5,23 +5,21 @@ import DevicesTable from "./components/devices-table";
 import Search from "./components/search";
 import Title from "./components/title";
 import DevicesToolbar from "./components/devices-toolbar";
-import { useState } from "react";
 import ThemeToggle from "./components/theme-toggle";
 
 export function App() {
-  const [onlyActive, setOnlyActive] = useState(false);
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search") ?? undefined;
+  const onlyActive = searchParams.get("is_active") === "true";
 
   const {
     data = [],
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["devices", search],
-    queryFn: () => getDevices(search),
+    queryKey: ["devices", search, onlyActive],
+    queryFn: () => getDevices(search, onlyActive),
   });
-
   const devices = data
     .filter((d) => !d.is_deleted)
     .filter((d) => (onlyActive ? d.is_active : true));
@@ -34,10 +32,7 @@ export function App() {
       <div className="flex flex-col gap-10">
         <Title />
         <Search />
-        <DevicesToolbar
-          onlyActive={onlyActive}
-          onOnlyActiveChange={setOnlyActive}
-        />
+        <DevicesToolbar />
         <DevicesTable
           devices={devices}
           isLoading={isLoading}

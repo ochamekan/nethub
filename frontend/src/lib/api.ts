@@ -1,8 +1,12 @@
 import type { Device } from "../types/device";
 
-export async function getDevices(search?: string): Promise<Device[]> {
+export async function getDevices(
+  search?: string,
+  onlyActive?: boolean,
+): Promise<Device[]> {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
+  if (onlyActive) params.set("is_active", "true");
 
   const query = params.size ? `?${params}` : "";
   const response = await fetch(`/api/v1/devices${query}`);
