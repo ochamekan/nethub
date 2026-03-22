@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { deleteDevice } from "@/lib/api";
 import { Trash2 } from "lucide-react";
@@ -53,14 +52,8 @@ export default function DeleteDeviceButton({
               Это действие необратимо.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={mutation.isPending}
-            >
-              Отмена
-            </Button>
+
+          <div className="flex flex-col gap-2 pt-2">
             <Button
               variant="destructive"
               disabled={mutation.isPending}
@@ -68,7 +61,14 @@ export default function DeleteDeviceButton({
             >
               {mutation.isPending ? "Удаление..." : "Удалить"}
             </Button>
-          </DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={mutation.isPending}
+            >
+              Отмена
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

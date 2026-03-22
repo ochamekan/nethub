@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -9,11 +9,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { IMaskInput } from "react-imask";
 import { updateDevice, type CreateDevicePayload } from "@/lib/api";
+import { hostnameMask, locationMask, ipMask } from "@/lib/input-filters";
 import type { Device } from "@/types/device";
 import { Pencil } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface EditDeviceDialogProps {
   device: Device;
@@ -24,7 +26,7 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
   const queryClient = useQueryClient();
 
   const {
-    register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -60,6 +62,14 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
 
   const onSubmit = (data: CreateDevicePayload) => mutation.mutate(data);
 
+  const inputClass = cn(
+    "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1",
+    "text-base shadow-xs outline-none transition-colors md:text-sm",
+    "placeholder:text-muted-foreground",
+    "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -78,7 +88,20 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
         >
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">Хост</label>
-            <Input {...register("hostname", { required: "Хост обязателен" })} />
+            <Controller
+              name="hostname"
+              control={control}
+              rules={{ required: "Хост обязателен" }}
+              render={({ field }) => (
+                <IMaskInput
+                  {...hostnameMask}
+                  value={field.value ?? ""}
+                  onAccept={(val) => field.onChange(val)}
+                  placeholder="edge-router-01"
+                  className={inputClass}
+                />
+              )}
+            />
             {errors.hostname && (
               <p className="text-xs text-destructive">
                 {errors.hostname.message}
@@ -88,7 +111,20 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">IP-адрес</label>
-            <Input {...register("ip", { required: "IP-адрес обязателен" })} />
+            <Controller
+              name="ip"
+              control={control}
+              rules={{ required: "IP-адрес обязателен" }}
+              render={({ field }) => (
+                <IMaskInput
+                  {...ipMask}
+                  value={field.value ?? ""}
+                  onAccept={(val) => field.onChange(val)}
+                  placeholder="192.168.1.1"
+                  className={inputClass}
+                />
+              )}
+            />
             {errors.ip && (
               <p className="text-xs text-destructive">{errors.ip.message}</p>
             )}
@@ -96,10 +132,19 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">Расположение</label>
-            <Input
-              {...register("location", {
-                required: "Расположение обязательно",
-              })}
+            <Controller
+              name="location"
+              control={control}
+              rules={{ required: "Расположение обязательно" }}
+              render={({ field }) => (
+                <IMaskInput
+                  {...locationMask}
+                  value={field.value ?? ""}
+                  onAccept={(val) => field.onChange(val)}
+                  placeholder="Germany"
+                  className={inputClass}
+                />
+              )}
             />
             {errors.location && (
               <p className="text-xs text-destructive">
