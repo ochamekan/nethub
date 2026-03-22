@@ -61,7 +61,7 @@ func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest)
 	}
 
 	if len(clauses) > 0 {
-		q += " " + strings.Join(clauses, " AND ")
+		q += " AND " + strings.Join(clauses, " AND ")
 	}
 	q += " ORDER BY created_at ASC"
 
