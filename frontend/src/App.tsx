@@ -14,14 +14,13 @@ export function App() {
   const onlyActive = searchParams.get("is_active") === "true";
 
   const {
-    data = [],
+    data: devices = [],
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["devices", search, onlyActive],
     queryFn: () => getDevices(search, onlyActive),
   });
-  const devices = data.filter((d) => !d.is_deleted);
 
   return (
     <div className="mx-auto my-0 w-full max-w-300 px-2 py-20">
