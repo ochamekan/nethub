@@ -90,12 +90,14 @@ export default function DevicesTable({
                   {new Date(device.created_at).toLocaleDateString("ru-RU")}
                 </TableCell>
                 <TableCell className="text-right">
-                  <EditDeviceDialog device={device} />
-                  <DeleteDeviceButton
-                    id={device.id}
-                    hostname={device.hostname}
-                  />
-                </TableCell>
+                  <div className="flex items-center justify-end gap-1">
+                    <EditDeviceDialog device={device} />
+                    <DeleteDeviceButton
+                      id={device.id}
+                      hostname={device.hostname}
+                    />
+                  </div>
+                </TableCell>{" "}
               </TableRow>
             ))
           )}

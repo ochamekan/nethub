@@ -37,11 +37,10 @@ export default function DeleteDeviceButton({
         variant="ghost"
         size="icon"
         onClick={() => setOpen(true)}
-        className="text-muted-foreground hover:text-destructive"
+        className="hover:text-destructive"
       >
         <Trash2 className="h-4 w-4" />
       </Button>
-
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>

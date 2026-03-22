@@ -1,3 +1,4 @@
+import { Search as SearchIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { useSearchParams } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
@@ -10,14 +11,14 @@ export default function Search() {
   }, 400);
 
   return (
-    <div className="w-full">
-      <div className="w-full flex gap-2">
-        <Input
-          placeholder="Введите имя хоста"
-          defaultValue={searchParams.get("search") ?? ""}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-      </div>
+    <div className="relative w-full">
+      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+      <Input
+        placeholder="Поиск по хосту..."
+        defaultValue={searchParams.get("search") ?? ""}
+        onChange={(e) => handleSearch(e.target.value)}
+        className="pl-9"
+      />
     </div>
   );
 }

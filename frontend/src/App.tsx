@@ -6,6 +6,7 @@ import Search from "./components/search";
 import Title from "./components/title";
 import DevicesToolbar from "./components/devices-toolbar";
 import { useState } from "react";
+import ThemeToggle from "./components/theme-toggle";
 
 export function App() {
   const [onlyActive, setOnlyActive] = useState(false);
@@ -27,6 +28,9 @@ export function App() {
 
   return (
     <div className="mx-auto my-0 w-full max-w-300 px-2 py-20">
+      <div className="fixed top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="flex flex-col gap-10">
         <Title />
         <Search />

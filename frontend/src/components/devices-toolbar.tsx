@@ -12,7 +12,10 @@ export default function DevicesToolbar({
 }: DevicesToolbarProps) {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+      <div
+        className="flex items-center gap-2 cursor-pointer select-none"
+        onClick={() => onOnlyActiveChange(!onlyActive)}
+      >
         <Switch checked={onlyActive} onCheckedChange={onOnlyActiveChange} />
         <span className="text-sm text-muted-foreground">Только активные</span>
       </div>
