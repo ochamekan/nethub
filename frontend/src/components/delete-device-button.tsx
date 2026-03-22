@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/device-form-dialog";
 import { deleteDevice } from "@/lib/api";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface DeleteDeviceButtonProps {
   id: number;
@@ -27,7 +22,15 @@ export default function DeleteDeviceButton({
     mutationFn: () => deleteDevice(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["devices"] });
+      toast.success(`${hostname} удалён`);
       setOpen(false);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Не удалось удалить устройство",
+      );
     },
   });
 
@@ -41,35 +44,21 @@ export default function DeleteDeviceButton({
       >
         <Trash2 className="h-4 w-4" />
       </Button>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Удалить устройство</DialogTitle>
-            <DialogDescription>
-              Вы уверены, что хотите удалить{" "}
-              <span className="font-medium text-foreground">{hostname}</span>?
-              Это действие необратимо.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-2 pt-2">
-            <Button
-              variant="destructive"
-              disabled={mutation.isPending}
-              onClick={() => mutation.mutate()}
-            >
-              {mutation.isPending ? "Удаление..." : "Удалить"}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={mutation.isPending}
-            >
-              Отмена
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Удалить устройство"
+        description={
+          <>
+            Вы уверены, что хотите удалить{" "}
+            <span className="font-medium text-foreground">{hostname}</span>? Это
+            действие необратимо.
+          </>
+        }
+        confirmLabel="Удалить"
+        isPending={mutation.isPending}
+        onConfirm={() => mutation.mutate()}
+      />
     </>
   );
 }

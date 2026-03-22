@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Device } from "@/types/device";
 import EditDeviceDialog from "./edit-device-dialog";
 import DeleteDeviceButton from "./delete-device-button";
+import DevicesTableSkeleton from "./device-table-skeleton";
 
 interface DevicesTableProps {
   devices: Device[];
@@ -24,12 +25,11 @@ export default function DevicesTable({
 }: DevicesTableProps) {
   if (isLoading) {
     return (
-      <div className="w-full py-10 text-center text-muted-foreground">
-        Загрузка устройств...
+      <div className="w-full">
+        <DevicesTableSkeleton />
       </div>
     );
   }
-
   if (isError) {
     return (
       <div className="w-full py-10 text-center text-destructive">
