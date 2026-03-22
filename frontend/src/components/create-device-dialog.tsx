@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { DeviceFormDialog } from "@/components/device-form-dialog";
-import { createDevice, type CreateDevicePayload } from "@/lib/api";
+import { createDevice } from "@/lib/api";
 import { toast } from "sonner";
+import type { CreateDevicePayload } from "@/types/device";
 
 export default function CreateDeviceDialog() {
   const [open, setOpen] = useState(false);
@@ -16,12 +17,8 @@ export default function CreateDeviceDialog() {
       toast.success("Устройство добавлено");
       setOpen(false);
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Не удалось создать устройство",
-      );
+    onError: (_: Error) => {
+      toast.error("Не удалось создать устройство");
     },
   });
 

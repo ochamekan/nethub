@@ -12,19 +12,19 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import { hostnameMask, locationMask, ipMask } from "@/lib/input-filters";
-import type { CreateDevicePayload } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import type { CreateDevicePayload, UpdateDevicePayload } from "@/types/device";
 
 interface DeviceFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  defaultValues?: Partial<CreateDevicePayload>;
+  defaultValues?: Partial<CreateDevicePayload | UpdateDevicePayload>;
   isPending: boolean;
   isError: boolean;
   error: Error | null;
   submitLabel: string;
-  onSubmit: (data: CreateDevicePayload) => void;
+  onSubmit: (data: CreateDevicePayload | UpdateDevicePayload) => void;
 }
 
 export function DeviceFormDialog({
@@ -45,7 +45,7 @@ export function DeviceFormDialog({
     watch,
     reset,
     formState: { errors },
-  } = useForm<CreateDevicePayload>({
+  } = useForm<CreateDevicePayload | UpdateDevicePayload>({
     defaultValues: { is_active: true, ...defaultValues },
   });
 

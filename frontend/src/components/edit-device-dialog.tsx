@@ -22,12 +22,8 @@ export default function EditDeviceDialog({ device }: EditDeviceDialogProps) {
       toast.success("Устройство обновлено");
       setOpen(false);
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Не удалось обновить устройство",
-      );
+    onError: (_) => {
+      toast.error("Не удалось обновить устройство");
     },
   });
 

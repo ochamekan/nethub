@@ -43,13 +43,12 @@ export default function DevicesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-16">#</TableHead>
             <TableHead>Хост</TableHead>
             <TableHead>IP-адрес</TableHead>
             <TableHead>Расположение</TableHead>
             <TableHead>Статус</TableHead>
-            <TableHead className="text-right">Дата добавления</TableHead>
-            <TableHead className="w-24 text-right">Действия</TableHead>
+            <TableHead>Дата добавления</TableHead>
+            <TableHead className="text-right">Действия</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,9 +67,6 @@ export default function DevicesTable({
                 key={device.id}
                 className={device.is_deleted ? "opacity-40" : ""}
               >
-                <TableCell className="text-muted-foreground">
-                  {device.id}
-                </TableCell>
                 <TableCell className="font-medium">{device.hostname}</TableCell>
                 <TableCell className="font-mono text-sm">{device.ip}</TableCell>
                 <TableCell>{device.location}</TableCell>
@@ -86,7 +82,7 @@ export default function DevicesTable({
                     {device.is_active ? "Активен" : "Неактивен"}
                   </Badge>{" "}
                 </TableCell>
-                <TableCell className="text-right text-sm text-muted-foreground">
+                <TableCell className="text-sm text-muted-foreground">
                   {new Date(device.created_at).toLocaleDateString("ru-RU")}
                 </TableCell>
                 <TableCell className="text-right">

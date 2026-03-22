@@ -23,11 +23,9 @@ export function App() {
   });
 
   return (
-    <div className="mx-auto my-0 w-full max-w-300 px-2 py-20">
-      <div className="fixed top-4 right-4">
-        <ThemeToggle />
-      </div>
+    <div className="mx-auto my-0 w-full max-w-300 px-2 py-10">
       <div className="flex flex-col gap-10">
+        <ThemeToggle />
         <Title />
         <Search />
         <DevicesToolbar />

@@ -1,4 +1,8 @@
-import type { Device } from "../types/device";
+import type {
+  CreateDevicePayload,
+  Device,
+  UpdateDevicePayload,
+} from "../types/device";
 
 export async function getDevices(
   search?: string,
@@ -12,17 +16,11 @@ export async function getDevices(
   const response = await fetch(`/api/v1/devices${query}`);
 
   if (!response.ok) {
-    throw new Error(`Не удалось загрузить устройства: ${response.statusText}`);
+    const message = await response.text();
+    throw new Error(message);
   }
 
   return response.json();
-}
-
-export interface CreateDevicePayload {
-  hostname: string;
-  ip: string;
-  location: string;
-  is_active: boolean;
 }
 
 export async function createDevice(
@@ -52,7 +50,7 @@ export async function deleteDevice(id: number): Promise<void> {
 
 export async function updateDevice(
   id: number,
-  payload: CreateDevicePayload,
+  payload: UpdateDevicePayload,
 ): Promise<Device> {
   const response = await fetch(`/api/v1/devices/${id}`, {
     method: "PUT",

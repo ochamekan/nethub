@@ -25,7 +25,7 @@ export default function DevicesToolbar() {
         onClick={() => handleToggle(!onlyActive)}
       >
         <Switch checked={onlyActive} onCheckedChange={handleToggle} />
-        <span className="text-sm text-muted-foreground">Только активные</span>
+        <span className="text-sm">Только активные</span>
       </div>
       <CreateDeviceDialog />
     </div>

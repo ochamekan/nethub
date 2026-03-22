@@ -11,12 +11,14 @@ export default function ThemeToggle() {
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-    >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </Button>
+    <div className="w-full flex justify-end">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setTheme(isDark ? "light" : "dark")}
+      >
+        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </Button>
+    </div>
   );
 }
