@@ -7,9 +7,16 @@ export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleSearch = useDebouncedCallback((value: string) => {
-    setSearchParams(value ? { search: value } : {});
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) {
+        next.set("search", value);
+      } else {
+        next.delete("search");
+      }
+      return next;
+    });
   }, 400);
-
   return (
     <div className="relative w-full">
       <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />

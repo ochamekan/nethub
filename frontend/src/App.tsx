@@ -9,6 +9,7 @@ import ThemeToggle from "./components/theme-toggle";
 
 export function App() {
   const [searchParams] = useSearchParams();
+
   const search = searchParams.get("search") ?? undefined;
   const onlyActive = searchParams.get("is_active") === "true";
 
@@ -20,9 +21,7 @@ export function App() {
     queryKey: ["devices", search, onlyActive],
     queryFn: () => getDevices(search, onlyActive),
   });
-  const devices = data
-    .filter((d) => !d.is_deleted)
-    .filter((d) => (onlyActive ? d.is_active : true));
+  const devices = data.filter((d) => !d.is_deleted);
 
   return (
     <div className="mx-auto my-0 w-full max-w-300 px-2 py-20">
