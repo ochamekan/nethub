@@ -44,7 +44,7 @@ func (r *Repository) CreateDevice(ctx context.Context, ip, hostname, location st
 }
 
 func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest) ([]models.Device, error) {
-	q := "SELECT * FROM devices"
+	q := "SELECT * FROM devices WHERE is_deleted = false"
 	args, argsIdx := []any{}, 1
 	var clauses []string
 
@@ -61,7 +61,7 @@ func (r *Repository) GetDevices(ctx context.Context, data dto.GetDevicesRequest)
 	}
 
 	if len(clauses) > 0 {
-		q += " WHERE " + strings.Join(clauses, " AND ")
+		q += " " + strings.Join(clauses, " AND ")
 	}
 	q += " ORDER BY created_at ASC"
 
