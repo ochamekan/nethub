@@ -29,11 +29,14 @@ func initDB() error {
 	defer db.Close()
 
 	// Нет проверки доступности соединения и таймаута
-	// ИСПРАВЛЕНО: проверяем реальную доступность БД с таймаутом, пример взял с гитхаба
-	err = db.Ping()
-	if err != nil {
+	// ИСПРАВЛЕНО: проверяем реальную доступность БД с таймаутом
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err = db.PingContext(ctx); err != nil {
 		return fmt.Errorf("db.Ping: %w", err)
 	}
+
 	return nil
 }
 
