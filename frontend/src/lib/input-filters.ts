@@ -1,7 +1,7 @@
 import type { FactoryOpts } from "imask";
 
 export const hostnameMask: FactoryOpts = {
-  mask: /^[a-zA-Z0-9._-]*$/,
+  mask: /^[a-zA-Z0-9._-\s]*$/,
 };
 
 export const locationMask: FactoryOpts = {
