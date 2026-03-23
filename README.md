@@ -24,6 +24,8 @@
 
 ### Backend
 
+Запущен на `localhost:8000`
+
 ```bash
 cd backend
 
@@ -38,6 +40,8 @@ cd backend
 ```
 
 ### Frontend
+
+Запущен на `localhost:5173`
 
 ```bash
 cd frontend
