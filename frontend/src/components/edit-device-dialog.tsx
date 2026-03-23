@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { DeviceFormDialog } from "@/components/device-form-dialog";
-import { updateDevice, type CreateDevicePayload } from "@/lib/api";
-import type { Device } from "@/types/device";
+import { updateDevice } from "@/lib/api";
+import type { CreateDevicePayload, Device } from "@/types/device";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
