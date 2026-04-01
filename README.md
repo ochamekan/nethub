@@ -54,7 +54,7 @@ cd frontend
 ```
 ## Стек приложения
 
-**Backend:** Go 1.26, PostgreSQL (pgx), Zap (Для логирования)
+**Backend:** Go, PostgreSQL (pgx), Zap (Для логирования), Goose (для миграций)
 
 **Frontend:** React + TS, Vite, Tailwind + shadcn/ui, React Router, TanStack Query, React Hook Form
 
@@ -64,6 +64,17 @@ cd frontend
 * Docker Compose
 * (опционально) Go — для локальной разработки backend
 * (опционально) Node.js + pnpm — для локальной разработки frontend
+
+## Эндпоинты
+
+| Метод | Endpoint                  | Описание |
+|-------|---------------------------|----------|
+| `POST`   | `/v1/devices`             | Создание нового устройства |
+| `GET`    | `/v1/devices`             | Получение списка устройств |
+| `GET`    | `/v1/devices/{id}`        | Получение устройства по ID |
+| `PUT`    | `/v1/devices/{id}`        | Обновление устройства |
+| `DELETE` | `/v1/devices/{id}`        | Мягкое удаление устройства (пометка флагом) |
+
 
 ## 📡 API примеры
 
