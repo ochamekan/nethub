@@ -52,6 +52,11 @@ cd frontend
 # очистка контейнеров
 ./cleanup.sh
 ```
+## Стек приложения
+
+**Backend:** Go 1.26, PostgreSQL (pgx), Zap (Для логирования)
+
+**Frontend:** React + TS, Vite, Tailwind + shadcn/ui, React Router, TanStack Query, React Hook Form
 
 ## 📦 Зависимости
 
